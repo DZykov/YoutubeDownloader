@@ -1,59 +1,69 @@
-import os
-from string import digits
+import replacer, downloader
+import sys
+from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtWidgets import QMainWindow, QWidget, QLabel, QLineEdit, QListWidget
+from PyQt5.QtWidgets import QPushButton
+from PyQt5.QtCore import QSize    
 
-def remove_suffix(input_string, suffix):
-    if suffix and input_string.endswith(suffix):
-        return input_string[:-len(suffix)]
-    return input_string
+class MainWindow(QMainWindow):
 
-table = str.maketrans('', '', digits)
+    def __init__(self):
+        QMainWindow.__init__(self)
 
-DIR = '/home/demid/Music/Rock'
+        self.setMinimumSize(QSize(320, 140))    
+        self.setWindowTitle("Youtube Playlist Downloader") 
+        
+        # playlist
+        self.playlistLabel = QLabel(self)
+        self.playlistLabel.setText('Playlist:')
+        self.line = QLineEdit(self)
 
-files_str = os.listdir(DIR)
+        self.line.move(100, 20)
+        self.line.resize(300, 32)
+        self.playlistLabel.move(10, 20)
 
-# print(files_str)
+        # directory
+        self.directoryLabel = QLabel(self)
+        self.directoryLabel.setText('Directory:')
+        self.line2 = QLineEdit(self)
 
-new_f = []
-for f in files_str:
-    n = remove_suffix(DIR+'/'+f.replace('  Supernatural - ', '').replace(
-        '(The Road So Far)', '').replace('Netflix Version', '')
-            .translate(table)[:-4], 'x') +'.mp4'
-    print(n)
-    o = DIR+'/'+f
-    #print(o)
-    os.rename(o, n)
-    new_f.append(n)
+        self.line2.move(100, 60)
+        self.line2.resize(300, 32)
+        self.directoryLabel.move(10, 60)
 
-seen = set()
-dupes = [x for x in new_f if x in seen or seen.add(x)]    
+        # replace
+        self.replaceLabel = QLabel(self)
+        self.replaceLabel.setText('Replace:')
+        self.line1 = QLineEdit(self)
 
-print('-'*50)
-print(dupes)
-"""
-import re
-from pytube import Playlist
+        self.line1.move(100, 100)
+        self.line1.resize(300, 32)
+        self.replaceLabel.move(10, 100)
 
-YOUTUBE_STREAM_AUDIO = '140' # modify the value to download a different stream
-DOWNLOAD_DIR = '/home/demid/Music/Rock'
+        pybutton = QPushButton('Download', self)
+        pybutton.clicked.connect(self.clickDownload)
+        pybutton.resize(300,32)
+        pybutton.move(100, 140)
 
-playlist = Playlist('https://www.youtube.com/playlist?list=PLfq80JKaBD-K3C7gKiSX_RST_NQNUrq89')
+        # show downloads
+        self.downloadedLabel = QLabel(self)
+        self.downloadedLabel.setText('Downloads:')
+        self.downloadedLabel.move(10, 180)
 
-# this fixes the empty playlist.videos list
-playlist._video_regex = re.compile(r"\"url\":\"(/watch\?v=[\w-]*)")
+        self.listDownloads = QListWidget(self)
+        self.listDownloads.resize(300, 200)
+        self.listDownloads.move(100, 180)
 
-print(len(playlist.video_urls))
 
-for url in playlist.video_urls:
-    print(url)
+    def clickDownload(self):
+        playlist = self.line.text()
+        directory = self.line2.text()
+        replaces = self.line1.text()
+        
+        self.listDownloads.addItems(['1','2','3'])
 
-# physically downloading the audio track
-count = 1
-for video in playlist.videos:
-    if count > 235:
-        audioStream = video.streams.get_by_itag(YOUTUBE_STREAM_AUDIO)
-        audioStream.download(output_path=DOWNLOAD_DIR)
-    print(count)
-    count+=1
-
-"""
+if __name__ == "__main__":
+    app = QtWidgets.QApplication(sys.argv)
+    mainWin = MainWindow()
+    mainWin.show()
+    sys.exit( app.exec_() )
