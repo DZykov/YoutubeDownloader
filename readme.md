@@ -8,7 +8,10 @@
 ## Arguments
 
 Playlist - url for public playlist on Youtube
+
 From - from which video in playlist you want to start download
+
 Directory - directory where files are downloaded
+
 Replace - what wards in title of video should be removed
 
